@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="Memini.Views.ThemePage"
+             Title="{Binding Name}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Delete"
+                     Clicked="OnThemeDeleteToolbarClicked"/>
+        <ToolbarItem x:Name="modifyToolbar"
+                     Text="Modify"
+                     Clicked="OnWordAddToolbarClicked" />
+    </ContentPage.ToolbarItems>
+    <StackLayout>
+        <Grid x:Name="newWordGrid"
+              HeightRequest="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0"/>
+            </Grid.RowDefinitions>
+            <Entry x:Name="wordEntry"
+                   Placeholder="Word"
+                   TextChanged="OnWordTextChanged"/>
+            <Entry x:Name="translationEntry"
+                   Grid.Column="1"
+                   TextChanged="OnTranslationTextChanged"
+                   Placeholder="Translation" />
+        </Grid>
+        <ListView x:Name="listWord"
+                  ItemTapped="OnListViewItemTapped">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid>
+                            <Label Text="{Binding V1}"/>
+                            <Label Grid.Column="1"
+                                   Text="{Binding V2}"
+                                   HorizontalOptions="End"/>
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</ContentPage>
