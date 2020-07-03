@@ -8,18 +8,34 @@
              Title="{Binding Name}">
     <ContentPage.Resources>
         <ResourceDictionary>
+            <Style x:Key="baseStyle"
+                   TargetType="View">
+            </Style>
+            <Style x:Key="editWordHideStyle"
+                   TargetType="Grid"
+                   BasedOn="{StaticResource baseStyle}">
+                <Setter Property="HeightRequest"
+                        Value="0"/>
+            </Style>
+            <Style x:Key="editWordShowStyle"
+                   TargetType="Grid"
+                   BasedOn="{StaticResource baseStyle}">
+                <Setter Property="HeightRequest"
+                        Value="55"/>
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Delete"
-                     Clicked="OnThemeDeleteToolbarClicked"/>
+        <ToolbarItem x:Name="deleteToolbar"
+                     Text="Delete"
+                     Clicked="OnDeleteToolbarClicked"/>
         <ToolbarItem x:Name="modifyToolbar"
-                     Text="Modify"
+                     Text="Add"
                      Clicked="OnWordAddToolbarClicked" />
     </ContentPage.ToolbarItems>
     <StackLayout>
-        <Grid x:Name="newWordGrid"
-              HeightRequest="0">
+        <Grid x:Name="editWordGrid"
+              Style="{DynamicResource editWordStyle}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0"/>
             </Grid.RowDefinitions>
@@ -39,8 +55,7 @@
                         <Grid>
                             <Label Text="{Binding V1}"/>
                             <Label Grid.Column="1"
-                                   Text="{Binding V2}"
-                                   HorizontalOptions="End"/>
+                                   Text="{Binding V2}"/>
                         </Grid>
                     </ViewCell>
                 </DataTemplate>

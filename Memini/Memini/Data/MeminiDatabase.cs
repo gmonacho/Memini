@@ -56,5 +56,9 @@ namespace Memini.Data
             _database.DeleteAllAsync(theme.Words);
             return _database.DeleteAsync(theme);
         }
+        public Task DeleteWordAsync(Word word)
+        {
+            return _database.DeleteAsync(word);
+        }
     }
 }
