@@ -1,8 +1,10 @@
 ﻿using SQLite;
 using SQLiteNetExtensions.Attributes;
+using System.Xml.Serialization;
 
 namespace Memini.Models
 {
+    [XmlRoot("entry")]
     public class Word
     {
         [PrimaryKey, AutoIncrement]
@@ -10,16 +12,21 @@ namespace Memini.Models
 
         [ForeignKey(typeof(Theme))]
         public int OwnerID { get; set; }
-        public string V1 { get; set; }
-        public string V2 { get; set; }
+        [XmlElement("gloss")]
+        public string Translation { get; set; }
+        [XmlElement("keb")]
+        public string Kanji { get; set; }
+        [XmlElement("reb")]
+        public string Kana { get; set; }
 
         [ManyToOne]
-        public Theme theme { get; set; }
+        public Theme Theme { get; set; }
 
         public Word()
         {
-            V1 = " ";
-            V2 = " ";
+            Translation = string.Empty;
+            Kanji = string.Empty;
+            Kana = string.Empty;
         }
     }
 }

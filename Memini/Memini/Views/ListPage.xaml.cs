@@ -1,7 +1,6 @@
 ﻿using Memini.Models;
 using System;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace Memini.Views
 {
@@ -29,10 +28,23 @@ namespace Memini.Views
 
         async void OnThemeAddedClicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new ThemePage
+            string name = await DisplayPromptAsync("Theme Name :",
+                                                     "Please, enter the new theme's name");
+            if (name != null)
             {
-                BindingContext = new Theme()
-            });
+                if (name.Length > 0)
+                {
+                    await Navigation.PushAsync(new ThemePage
+                    {
+                        BindingContext = new Theme
+                        {
+                            Name = name
+                        }
+                    });
+                }
+                else
+                    OnThemeAddedClicked(sender, e);
+            }
         }
 
         async void OnListViewItemTapped(object sender, ItemTappedEventArgs e)

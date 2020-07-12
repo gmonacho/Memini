@@ -6,6 +6,10 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Android.Content.Res;
+using System.IO;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace Memini.Droid
 {
@@ -21,7 +25,9 @@ namespace Memini.Droid
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            LoadApplication(new App());
+
+            // Japanese xml dictionnary loading
+            LoadApplication(new App(new StreamReader(Assets.Open("JMdict_e.txt"))));
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {

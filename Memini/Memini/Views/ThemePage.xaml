@@ -39,13 +39,17 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="0"/>
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0"/>
+                <ColumnDefinition Width="0"/>
+            </Grid.ColumnDefinitions>
             <Entry x:Name="wordEntry"
                    Placeholder="Word"
                    TextChanged="OnWordTextChanged"/>
-            <Entry x:Name="translationEntry"
+            <Entry x:Name="japaneseEntry"
                    Grid.Column="1"
-                   TextChanged="OnTranslationTextChanged"
-                   Placeholder="Translation" />
+                   Placeholder="Japanese"
+                   TextChanged="OnTranslationTextChanged" />
         </Grid>
         <ListView x:Name="listWord"
                   ItemTapped="OnListViewItemTapped">
@@ -53,9 +57,11 @@
                 <DataTemplate>
                     <ViewCell>
                         <Grid>
-                            <Label Text="{Binding V1}"/>
+                            <Label Text="{Binding Translation}"/>
                             <Label Grid.Column="1"
-                                   Text="{Binding V2}"/>
+                                   Text="{Binding Kana}"/>
+                            <Label Grid.Column="2"
+                                   Text="{Binding Kanji}"/>
                         </Grid>
                     </ViewCell>
                 </DataTemplate>

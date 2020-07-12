@@ -2,6 +2,8 @@
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Memini.Models;
+using Android.Content.Res;
+using Xamarin.Essentials;
 
 namespace Memini.Views
 {
@@ -29,9 +31,18 @@ namespace Memini.Views
             listWord.ItemsSource = theme.Words;
             if (theme.ID == 0)
             {
-                theme.Name = "New Theme";
                 await App.Database.SaveThemeAsync(theme);
             }
+        }
+
+        private void ShowAddGrid()
+        {
+            Resources["editWordStyle"] = Resources["editWordShowStyle"];
+            editWordGrid.RowDefinitions[0].Height = editWordGrid.HeightRequest;
+            modifyToolbar.Text = "Ok";
+            editWordGrid.ColumnDefinitions[0].Width = Application.Current.MainPage.Width;
+            editWordGrid.ColumnDefinitions[1].Width = 0;
+            _toolbarHide = false;
         }
 
         private void HideEditGrid()
@@ -40,8 +51,9 @@ namespace Memini.Views
             editWordGrid.RowDefinitions[0].Height = editWordGrid.HeightRequest;
             modifyToolbar.Text = "Add";
             _toolbarHide = true;
+            deleteToolbar.Text = "Delete";
         }
-        
+
         private void ShowEditGrid()
         {
             Resources["editWordStyle"] = Resources["editWordShowStyle"];
@@ -53,7 +65,7 @@ namespace Memini.Views
         private void ToggleEditGrid()
         {
             if (_toolbarHide == true)
-                ShowEditGrid();
+                ShowAddGrid();
             else
                 HideEditGrid();
         }
@@ -63,20 +75,19 @@ namespace Memini.Views
             _newWord = string.Empty;
             _newTranslation = string.Empty;
             wordEntry.Text = _newWord;
-            translationEntry.Text = _newTranslation;
+            japaneseEntry.Text = _newTranslation;
         }
 
-        async private void AddNewWord(string v1, string v2)
+        async private void AddNewWord(Word word)
         {
-            var theme = (Theme)BindingContext;
-            var word = new Word
+            if (word != null)
             {
-                V1 = v1,
-                V2 = v2
-            };
-            await App.Database.SaveWordAsync(word);
-            theme.Words.Add(word);
-            await App.Database.SaveThemeAsync(theme);
+                var theme = (Theme)BindingContext;
+
+                await App.Database.SaveWordAsync(word);
+                theme.Words.Add(word);
+                await App.Database.SaveThemeAsync(theme);
+            }
         }
         
         async private void EditExistingWord(string v1, string v2, int id)
@@ -89,7 +100,7 @@ namespace Memini.Views
                 {
                     await App.Database.DeleteWordAsync(word);
                     theme.Words.Remove(word);
-                    AddNewWord(v1, v2);
+                //    AddNewWord(v1, v2);
                     break;
                 }
             }
@@ -101,8 +112,10 @@ namespace Memini.Views
             {
                 if (listWord.SelectedItem == null)
                 {
-                    if (_newWord.Length > 0 && _newTranslation.Length > 0)
-                        AddNewWord(_newWord, _newTranslation);
+                    if (_newWord.Length > 0)
+                    {
+                        AddNewWord(App.Dict.GetWord(_newWord));
+                    }
                 }
                 else
                 {
@@ -112,20 +125,25 @@ namespace Memini.Views
                 }
             }
             ToggleEditGrid();
-            deleteToolbar.Text = "Delete";
             EmptyEditSystem();
         }
 
         async void OnDeleteToolbarClicked(object sender, EventArgs e)
         {
+            Theme theme = (Theme)BindingContext;
+
             if (listWord.SelectedItem == null)
             {
-                await App.Database.DeleteThemeAsync((Theme)BindingContext);
-                await Navigation.PopAsync();
+                if (await DisplayAlert("Delete Theme",
+                                        $"Would you like to delete {theme.Name}",
+                                        "Yes", "No"))
+                {
+                    await App.Database.DeleteThemeAsync((Theme)BindingContext);
+                    await Navigation.PopAsync();
+                }
             }
             else
             {
-                Theme theme = (Theme)BindingContext;
                 await App.Database.DeleteWordAsync((Word)listWord.SelectedItem);
                 theme.Words.Remove((Word)listWord.SelectedItem);
                 listWord.SelectedItem = null;
@@ -148,8 +166,8 @@ namespace Memini.Views
         void OnListViewItemTapped(object sender, ItemTappedEventArgs e)
         {
             Word word = (Word)e.Item;
-            wordEntry.Text = word.V1;
-            translationEntry.Text = word.V2;
+            wordEntry.Text = word.Translation;
+            japaneseEntry.Text = word.Kanji;
             ShowEditGrid();
             deleteToolbar.Text = "Delete Word";
         }
