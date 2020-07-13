@@ -114,7 +114,7 @@ namespace Memini.Views
                 {
                     if (_newWord.Length > 0)
                     {
-                        AddNewWord(App.Dict.GetWord(_newWord));
+                        ;//AddNewWord(App.Dict.GetWord(_newWord));
                     }
                 }
                 else

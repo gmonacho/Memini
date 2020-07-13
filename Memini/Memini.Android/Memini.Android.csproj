@@ -95,13 +95,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\read_asset.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidAsset Include="Assets\xmlText.txt" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\JMdict_e.txt" />
+    <None Include="Assets\Jdict.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <ProjectExtensions>

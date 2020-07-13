@@ -28,7 +28,6 @@ namespace Memini
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("PUET:");
                         Console.WriteLine(ex.ToString());
                     }
                 }
@@ -52,12 +51,12 @@ namespace Memini
             MainPage = new NavigationPage(new ListPage());
         }
 
-        public App(StreamReader xmlStream)
+        public App(StreamReader dictStream)
         {
             InitializeComponent();
             try
             {
-                dict = new XmlDict(xmlStream.ReadToEnd());
+                dict = new XmlDict(dictStream);
             }
             catch (Exception ex)
             {

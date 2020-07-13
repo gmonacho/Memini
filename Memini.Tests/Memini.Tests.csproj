@@ -22,8 +22,4 @@
     <ProjectReference Include="..\Memini\Memini\Memini.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Assets\" />
-  </ItemGroup>
-
 </Project>

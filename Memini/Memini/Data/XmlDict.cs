@@ -1,93 +1,120 @@
 ﻿using Memini.Models;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using Xamarin.Forms.Shapes;
 
 namespace Memini.Data
 {
     public class XmlDict
     {
-        private string _xmlString;
+        private string _dictString;
+        private int _i;
 
-        public XmlDict(string xml)
+        public XmlDict(string dictString)
         {
-            if (xml == null)
+            if (dictString == null)
                 throw new ArgumentNullException("xml (string) argument is null");
-            _xmlString = xml;
+            _dictString = dictString;
         }
 
-        public Word GetWord(string lookingStr)
+        public XmlDict(StreamReader dictStream)
         {
-            int entryLine = 0;
-            bool found = false;
+            _dictString = dictStream.ReadToEnd();
+        }
 
-            try
+        void MoveToNextMarker()
+        {
+            while (_dictString[_i] != ':' &&
+                   _dictString[_i] != ';' &&
+                   _dictString[_i] != '!' &&
+                   _dictString[_i] != '\0')
+            {
+                _i++;
+            }
+        }
+
+        void SkipLine()
+        {
+            while (_dictString[_i] != '\n' &&
+                   _dictString[_i] != '\0')
+            {
+                _i++;
+            }
+            MoveToNextMarker();
+        }
+
+        bool IsSearchedWord(string lookingStr)
+        {
+            int i = _i;
+
+            while (_dictString[i] != '\n')
+                i++;
+            return (_dictString.IndexOf(lookingStr, _i, i - _i) != -1);
+        }
+
+        string ParseContent(char delimiter)
+        {
+            string kanji = string.Empty;
+            int len = _dictString.Length;
+            int i = _i;
+
+            while (i < len &&
+                   _dictString[i] != delimiter &&
+                   _dictString[i] != '\r' &&
+                   _dictString[i] != '\n')
             { 
-                using (StringReader sr = new StringReader(_xmlString))
+                i++;
+            }
+            kanji = _dictString.Substring(_i, i - _i);
+            return (kanji);
+        }
+
+        Word ParseCurrentWord(string lookingStr)
+        {
+            Word word = new Word();
+
+            SkipLine();
+            if (_dictString[_i] == ':')
+            {
+                _i++;
+                word.Kanji = ParseContent(':');
+                SkipLine();
+            }
+            if (_dictString[_i] == '!')
+            {
+                _i++;
+                word.Kana = ParseContent('!');
+            }
+            word.Translation = lookingStr;
+            return (word);
+        }
+
+        public List<Word>   GetWordsByGloss(string lookingStr)
+        {
+            List<Word> words = new List<Word>();
+            int len = _dictString.Length;
+
+            if (string.IsNullOrEmpty(lookingStr) == false)
+            { 
+                _i = 0;
+                while (_i < len)
                 {
-                    using (XmlTextReader xmlReader = new XmlTextReader(sr))
+                    if (_dictString[_i] == ';')
                     {
-                        if (lookingStr != null)
+                        if (IsSearchedWord(lookingStr))
                         {
-                            while (xmlReader.ReadToFollowing("entry") == true && found == false)
-                            {
-                                entryLine = xmlReader.LineNumber;
-                                XmlReader entryReader = xmlReader.ReadSubtree();
-                                while (entryReader.ReadToFollowing("gloss") == true && entryReader.EOF == false && found == false)
-                                {
-                                    if (entryReader.ReadInnerXml() == lookingStr)
-                                    {
-                                        found = true;
-                                    }
-                                }
-                            }
+                            words.Add(ParseCurrentWord(lookingStr));
                         }
                     }
+                    _i++;
                 }
+                return (words.Count == 0 ? null : words);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw;
-            }
-            if (found == true)
-            {
-                using (StringReader sr = new StringReader(_xmlString))
-                {
-                    for (int i = 0; i < entryLine - 1; i++)
-                    {
-                        sr.ReadLine();
-                    }
-                    string element = String.Empty;
-
-                    string line;
-                    while ((line = sr.ReadLine()).Contains("</entry>") == false && line != null)
-                    {
-                        if (line.Contains(";") == false)
-                        {
-                            element += line + '\n';
-                        }
-                    }
-                    element += line + '\n';
-                    XDocument doc = XDocument.Parse(element);
-
-                    Word word = new Word();
-
-                    if (doc.Descendants("keb").FirstOrDefault() != null)
-                        word.Kanji = doc.Descendants("keb").FirstOrDefault().Value;
-                    if (doc.Descendants("reb").FirstOrDefault() != null)
-                        word.Kana = doc.Descendants("reb").FirstOrDefault().Value;
-                    word.Translation = lookingStr;
-
-                    return (word);
-                }
-            }
-            else
-            {
-                return (null);
-            }
+            return (null);
         }
     }
 }

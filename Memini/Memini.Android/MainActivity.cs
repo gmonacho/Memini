@@ -27,7 +27,7 @@ namespace Memini.Droid
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
 
             // Japanese xml dictionnary loading
-            LoadApplication(new App(new StreamReader(Assets.Open("JMdict_e.txt"))));
+            LoadApplication(new App(new StreamReader(Assets.Open("Jdict.txt"))));
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
